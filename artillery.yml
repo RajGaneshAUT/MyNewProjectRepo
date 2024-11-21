@@ -1,0 +1,58 @@
+config:
+  target: http://commitquality.com
+  engines:
+    playwright: {}
+      # launchOptions:
+      #   headless: false
+  processor: './tests/artillery/login.js'
+
+  phases: 
+  # # inject 1 user every second for 10 seconds phase
+  #   - name: constantArrival
+  #     duration: 10
+  #     arrivalRate: 1
+  # # pause phase
+  #   - name: pause
+  #     pause: 6
+  # # Rampup phase
+  #   - name: rampup
+  #     duration: 10
+  #     arrivalRate: 1
+  #     rampTo: 10
+  # fixed Arrival
+    - name: fixedArrival
+      duration: 3
+      arrivalRate: 3
+
+# the below code is just for understanding the payload and 
+  payload: 
+   path: './testData/testData.csv'
+   order:  sequence  # to fetch data sequentially or random  deafult is random
+   loadAll: true # to load all the data for all the virtual users
+   skipHeader: true       # default is false
+   delimiter: ","
+   skipEmptyLines: true
+   fields:
+     - "first name"
+     - "last name"
+     - "id"
+     - "SpecialityName"
+    
+scenarios:
+  - name: Performance Testing By ARTILLERY
+    engine: playwright
+    testFunction: "ArtilleryScript"
+  
+  - name: petclinic_add_vets
+    flow: 
+      - post: 
+          url: /vets
+          headers:
+            Content-Type: application/json
+          json:
+            - firstname: "{{firstname}}"
+            - lastname: "{{lastname}}"
+            - id: "{{id}}"
+              specialities: 
+              - id: "{{ id }}"
+                name: "{{SpecialityName}}"
